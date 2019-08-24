@@ -1,0 +1,63 @@
+<form [formGroup]="transferForm" novalidate (ngSubmit)="onSubmit()">
+  <mat-card class="transfer-card">
+    <mat-card-header>
+      <mat-card-title>Transfer to Paypal</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Your Email" formControlName="email">
+            <mat-error *ngIf="transferForm.controls['email'].hasError('required')">
+              Your Email is <strong>required</strong>
+            </mat-error>
+            <mat-error *ngIf="transferForm.controls['email'].hasError('email')">
+              Your Email is <strong>wrong</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Receiver Email" formControlName="receiveEmail">
+            <mat-error *ngIf="transferForm.controls['receiveEmail'].hasError('required')">
+              Receiver Email is <strong>required</strong>
+            </mat-error>
+            <mat-error *ngIf="transferForm.controls['receiveEmail'].hasError('email')">
+              Receiver Email is <strong>wrong</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Amount" formControlName="amount">
+            <mat-error *ngIf="transferForm.controls['amount'].hasError('required')">
+              Amount is <strong>required</strong>
+            </mat-error>
+            <mat-error *ngIf="transferForm.controls['amount'].hasError('pattern')">
+              Amount is not a <strong>number</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-select placeholder="Currency" formControlName="currency">
+              <mat-option *ngFor="let currency of currencies" [value]="currency.abbreviation">
+                {{ currency.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="transferForm.controls['currency'].hasError('required')">
+              Currency is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" type="submit" [disabled]="transferForm.invalid">Submit</button>
+    </mat-card-actions>
+  </mat-card>
+</form>
