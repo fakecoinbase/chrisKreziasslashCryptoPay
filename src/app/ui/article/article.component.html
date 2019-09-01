@@ -1,0 +1,19 @@
+<mat-card *ngIf="latestArticle;else loading">
+  <h3>
+    <a href="{{latestArticle.url}}">{{latestArticle.title}}</a>
+  </h3>
+  <div class="img-container">
+    <img src="{{latestArticle.urlToImage}}" alt="{{latestArticle.description}}">
+  </div>
+  <mat-card-content>
+    <p>{{latestArticle.content}}</p>
+  </mat-card-content>
+  <mat-card-subtitle>
+    <footer>
+      <p>
+        Published at {{latestArticle.publishedAt | date}} on {{latestArticle.source.name}}
+      </p>
+    </footer>
+  </mat-card-subtitle>
+</mat-card>
+<ng-template #loading>Loading Latest Article</ng-template>

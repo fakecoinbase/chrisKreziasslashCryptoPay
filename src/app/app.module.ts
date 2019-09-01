@@ -25,6 +25,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TransferFormComponent } from './ui/transfer-form/transfer-form.component';
+import { ArticleComponent } from './ui/article/article.component';
+import { HttpClientModule } from '@angular/common/http';
+import { NewsContentComponent } from './ui/news-content/news-content.component';
+import { ArticlesListComponent } from './ui/articles-list/articles-list.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +40,9 @@ import { TransferFormComponent } from './ui/transfer-form/transfer-form.componen
     DashboardsComponent,
     ContactFormComponent,
     TransferFormComponent,
+    ArticleComponent,
+    NewsContentComponent,
+    ArticlesListComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,6 +61,7 @@ import { TransferFormComponent } from './ui/transfer-form/transfer-form.componen
     MatSelectModule,
     MatRadioModule,
     ReactiveFormsModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

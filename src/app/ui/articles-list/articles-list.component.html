@@ -1,0 +1,21 @@
+<ng-container *ngIf="articlesList.length;else loading">
+  <div class="row pb-1" *ngFor="let article of articlesList">
+    <div class="col">
+      <mat-card>
+        <h5>
+          <a href="{{article.url}}">{{article.title}}</a>
+        </h5>
+        <div class="img-container">
+          <img src="{{article.urlToImage}}" alt="{{article.description}}">
+        </div>
+        <mat-card-content>
+          {{article.description}}
+        </mat-card-content>
+        <mat-card-subtitle>
+          Published on {{article.source.name}}
+        </mat-card-subtitle>
+      </mat-card>
+    </div>
+  </div>
+</ng-container>
+<ng-template #loading>Loading list of top articles</ng-template>
