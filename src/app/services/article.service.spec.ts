@@ -63,7 +63,9 @@ describe('ArticleService', () => {
       .requestArticle()
       .subscribe(
         response => fail('expected an error, not heroes'),
-        error => expect(error.message).toContain('test 404 error')
+        error => expect(error.status).toEqual(404)
       );
+    expect(http.get.calls.count()).toBe(2, 'one call for http request');
+    expect(util.formatDate.calls.count()).toBe(2, 'one call to format date');
   });
 });

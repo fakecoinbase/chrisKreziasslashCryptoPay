@@ -13,7 +13,7 @@ import {
 })
 export class ArticlesListComponent implements OnInit, OnDestroy {
   articleSub: Subscription;
-  articlesList: ArticlesModel[];
+  articlesList: ArticlesModel[] = [];
   constructor(
     private ref: ChangeDetectorRef,
     public articleService: ArticleService

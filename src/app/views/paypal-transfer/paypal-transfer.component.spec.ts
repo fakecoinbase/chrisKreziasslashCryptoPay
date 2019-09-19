@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PaypalTransferComponent } from './paypal-transfer.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('PaypalTransferComponent', () => {
   let component: PaypalTransferComponent;
@@ -8,9 +9,9 @@ describe('PaypalTransferComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PaypalTransferComponent ]
-    })
-    .compileComponents();
+      declarations: [PaypalTransferComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
