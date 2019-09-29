@@ -29,6 +29,8 @@ import { ArticleComponent } from './ui/article/article.component';
 import { HttpClientModule } from '@angular/common/http';
 import { NewsContentComponent } from './ui/news-content/news-content.component';
 import { ArticlesListComponent } from './ui/articles-list/articles-list.component';
+import { StocksDashboardComponent } from './ui/stocks-dashboard/stocks-dashboard.component';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 @NgModule({
   declarations: [
@@ -43,6 +45,7 @@ import { ArticlesListComponent } from './ui/articles-list/articles-list.componen
     ArticleComponent,
     NewsContentComponent,
     ArticlesListComponent,
+    StocksDashboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,6 +65,7 @@ import { ArticlesListComponent } from './ui/articles-list/articles-list.componen
     MatRadioModule,
     ReactiveFormsModule,
     HttpClientModule,
+    HighchartsChartModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
