@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { ArticleService } from './article.service';
+import { HttpRequestsService } from './article.service';
 import { UtilitiesService } from './utilities.service';
 import { asyncData, asyncError } from '../testing/async-observable-helpers';
 import { NewsTopHeadlinesModel } from '../models/newsTopHeadlines.model';
 
 describe('ArticleService', () => {
-  let article: ArticleService;
+  let article: HttpRequestsService;
   let util: jasmine.SpyObj<UtilitiesService>;
   let http: jasmine.SpyObj<HttpClient>;
   const utilSpy = jasmine.createSpyObj('UtilitiesService', ['formatDate']);
@@ -15,12 +15,12 @@ describe('ArticleService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        ArticleService,
+        HttpRequestsService,
         { provide: UtilitiesService, useValue: utilSpy },
-        { provide: HttpClient, useValue: httpSpy },
-      ],
+        { provide: HttpClient, useValue: httpSpy }
+      ]
     });
-    article = TestBed.get(ArticleService);
+    article = TestBed.get(HttpRequestsService);
     http = TestBed.get(HttpClient);
     util = TestBed.get(UtilitiesService);
   });
@@ -33,7 +33,7 @@ describe('ArticleService', () => {
     const expectedArticles: NewsTopHeadlinesModel = {
       status: 'ok',
       totalResults: 0,
-      articles: [],
+      articles: []
     };
     http.get.and.returnValue(asyncData(expectedArticles));
     article
@@ -54,7 +54,7 @@ describe('ArticleService', () => {
     const errorResponse = new HttpErrorResponse({
       error: 'test 404 error',
       status: 404,
-      statusText: 'Not Found',
+      statusText: 'Not Found'
     });
 
     http.get.and.returnValue(asyncError(errorResponse));

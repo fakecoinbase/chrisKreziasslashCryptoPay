@@ -1,27 +1,27 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ArticleService } from '../../services/article.service';
+import { HttpRequestsService } from '../../services/article.service';
 import {
   ArticlesModel,
-  NewsTopHeadlinesModel,
+  NewsTopHeadlinesModel
 } from 'src/app/models/newsTopHeadlines.model';
 
 @Component({
   selector: 'app-article',
   templateUrl: './article.component.html',
-  styleUrls: ['./article.component.scss'],
+  styleUrls: ['./article.component.scss']
 })
 export class ArticleComponent implements OnInit, OnDestroy {
   newsArticleSub: Subscription;
   latestArticle: ArticlesModel;
 
   constructor(
-    public articleService: ArticleService,
+    public http: HttpRequestsService,
     private ref: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    this.newsArticleSub = this.articleService.requestArticle().subscribe(
+    this.newsArticleSub = this.http.requestArticle().subscribe(
       (resp: NewsTopHeadlinesModel) => {
         this.latestArticle = resp.articles[0];
       },

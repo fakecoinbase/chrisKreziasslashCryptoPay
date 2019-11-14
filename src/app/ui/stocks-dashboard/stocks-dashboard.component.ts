@@ -1,53 +1,54 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import * as Highcharts from 'highcharts/highstock';
-import { ArticleService } from 'src/app/services/article.service';
+import { HttpRequestsService } from 'src/app/services/article.service';
+import { Component, OnDestroy, AfterViewInit } from '@angular/core';
+import * as Highcharts from 'highcharts';
 import { Subscription } from 'rxjs';
+import { UtilitiesService } from 'src/app/services/utilities.service';
 
 @Component({
   selector: 'app-stocks-dashboard',
   templateUrl: './stocks-dashboard.component.html',
-  styleUrls: ['./stocks-dashboard.component.scss'],
+  styleUrls: ['./stocks-dashboard.component.scss']
 })
-export class StocksDashboardComponent implements OnInit, OnDestroy {
-  OHLCSub: Subscription;
-  Highcharts: typeof Highcharts = Highcharts;
-  chartOptions: Highcharts.Options = {
-    rangeSelector: {
-      selected: 2,
-    },
-
-    title: {
-      text: 'AAPL Stock Price',
-    },
-    series: [],
+export class StocksDashboardComponent implements AfterViewInit, OnDestroy {
+  public chart: typeof Highcharts = Highcharts;
+  public chartOptions: Highcharts.Options = {
+    series: [
+      {
+        data: [],
+        type: 'line'
+      }
+    ]
   };
+  public updateFlag: boolean = false;
+  private subscriptions: Subscription[] = [];
   constructor(
-    private service: ArticleService,
-    private ref: ChangeDetectorRef
+    private http: HttpRequestsService,
+    private util: UtilitiesService
   ) {}
 
-  ngOnInit() {
-    this.OHLCSub = this.service.requestOHLCV().subscribe(
-      response => {
-        this.chartOptions.series[0] = {
-          type: 'ohlc',
-          name: 'AAPL Stock Price',
-          data: response,
-          dataGrouping: {
-            units: [['week', [1]], ['month', [1, 2, 3, 4, 6]]],
-          },
-        };
-      },
-      error => {
-        console.error(error);
-      },
-      () => {
-        this.ref.detectChanges();
-      }
-    );
+  ngAfterViewInit(): void {
+    const dataSub: Subscription = this.setData();
+    this.subscriptions.push(dataSub);
   }
 
   ngOnDestroy(): void {
-    this.OHLCSub.unsubscribe();
+    this.util.unsubscribe(this.subscriptions);
+  }
+
+  private setData(): Subscription {
+    return this.http.requestCloseData().subscribe(
+      (data: number[]) => {
+        this.chartOptions.series = [
+          {
+            data,
+            type: 'line'
+          }
+        ];
+        this.updateFlag = true;
+      },
+      error => {
+        console.error(error);
+      }
+    );
   }
 }
