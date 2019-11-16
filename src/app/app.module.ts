@@ -31,6 +31,8 @@ import { NewsContentComponent } from './ui/news-content/news-content.component';
 import { ArticlesListComponent } from './ui/articles-list/articles-list.component';
 import { StocksDashboardComponent } from './ui/stocks-dashboard/stocks-dashboard.component';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { CoinDetailsComponent } from './ui/coin-details/coin-details.component';
+import { SectionCoinDetailsComponent } from './ui/section-coin-details/section-coin-details.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +48,8 @@ import { HighchartsChartModule } from 'highcharts-angular';
     NewsContentComponent,
     ArticlesListComponent,
     StocksDashboardComponent,
+    CoinDetailsComponent,
+    SectionCoinDetailsComponent,
   ],
   imports: [
     BrowserModule,

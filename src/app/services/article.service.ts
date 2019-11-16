@@ -33,7 +33,7 @@ export class HttpRequestsService {
     );
   }
 
-  requestCloseData(period: Periods = Periods.Day): Observable<number[]> {
+  requestOHLCData(period: Periods = Periods.Day): Observable<CloseData> {
     const httpOptions = {
       headers: new HttpHeaders({ 'X-CoinAPI-Key': this.coinApiKey })
     };
@@ -43,25 +43,50 @@ export class HttpRequestsService {
         httpOptions
       )
       .pipe(
-        map((response: any) => {
-          const temp: OHLCVResponse[] = response as OHLCVResponse[];
-          return temp
-            .map((record: OHLCVResponse) => [
-              new Date(record.time_period_end).getTime(),
-              record.price_close
-            ])
-            .sort((a, b) => {
-              if (a[0] > b[0]) {
-                return -1;
-              } else if (a[0] < b[0]) {
-                return 1;
-              } else {
-                return 0;
-              }
-            })
-            .map((record: number[]) => {
-              return record[1];
-            });
+        map((response: OHLCVResponse[]) => {
+          response = response.reverse();
+          const priceClose: number[] = response.map(
+            record => record.price_close
+          );
+          const timePeriodEnd: string[] = response.map(record =>
+            this.util.formatDate(new Date(record.time_period_end))
+          );
+          return { priceClose, timePeriodEnd };
+        })
+      );
+  }
+
+  requestCoinDetails(
+    assetIdBase: string,
+    assetIdQuote: string
+  ): Observable<string> {
+    const httpOptions = {
+      headers: new HttpHeaders({ 'X-CoinAPI-Key': this.coinApiKey })
+    };
+    return this.http
+      .get(
+        `https://rest.coinapi.io/v1/exchangerate/${assetIdBase}`,
+        httpOptions
+      )
+      .pipe(
+        map((response: EchangeRate) => {
+          return response.rates
+            .find((record: RateItem) => record.asset_id_quote === assetIdQuote)
+            .rate.toFixed(2);
+        })
+      );
+  }
+
+  requestCoinIcons(assetId: string, iconSize: string): Observable<string> {
+    const httpOptions = {
+      headers: new HttpHeaders({ 'X-CoinAPI-Key': this.coinApiKey })
+    };
+    return this.http
+      .get(`https://rest.coinapi.io/v1/assets/icons/${iconSize}`, httpOptions)
+      .pipe(
+        map((response: AssetIcon[]) => {
+          return response.find((icon: AssetIcon) => icon.asset_id === assetId)
+            .url;
         })
       );
   }
@@ -70,4 +95,25 @@ export class HttpRequestsService {
 interface OHLCVResponse {
   time_period_end: string;
   price_close: number;
+}
+
+interface EchangeRate {
+  asset_id_base: string;
+  rates: RateItem[];
+}
+
+interface RateItem {
+  time: string;
+  asset_id_quote: string;
+  rate: number;
+}
+
+interface AssetIcon {
+  asset_id: string;
+  url: string;
+}
+
+export interface CloseData {
+  priceClose: number[];
+  timePeriodEnd: string[];
 }

@@ -1,4 +1,7 @@
-import { HttpRequestsService } from 'src/app/services/article.service';
+import {
+  HttpRequestsService,
+  CloseData
+} from 'src/app/services/article.service';
 import { Component, OnDestroy, AfterViewInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { Subscription } from 'rxjs';
@@ -12,12 +15,14 @@ import { UtilitiesService } from 'src/app/services/utilities.service';
 export class StocksDashboardComponent implements AfterViewInit, OnDestroy {
   public chart: typeof Highcharts = Highcharts;
   public chartOptions: Highcharts.Options = {
-    series: [
-      {
-        data: [],
-        type: 'line'
+    title: {
+      text: 'BTC to USD'
+    },
+    yAxis: {
+      title: {
+        text: 'Close Price'
       }
-    ]
+    }
   };
   public updateFlag: boolean = false;
   private subscriptions: Subscription[] = [];
@@ -36,11 +41,15 @@ export class StocksDashboardComponent implements AfterViewInit, OnDestroy {
   }
 
   private setData(): Subscription {
-    return this.http.requestCloseData().subscribe(
-      (data: number[]) => {
+    return this.http.requestOHLCData().subscribe(
+      (data: CloseData) => {
+        this.chartOptions.xAxis = {
+          categories: data.timePeriodEnd
+        };
         this.chartOptions.series = [
           {
-            data,
+            name: 'BTC to USD',
+            data: data.priceClose,
             type: 'line'
           }
         ];
