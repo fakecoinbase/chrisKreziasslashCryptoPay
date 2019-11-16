@@ -22,10 +22,14 @@ export class HttpRequestsService {
   constructor(private http: HttpClient, private util: UtilitiesService) {}
 
   requestArticle(): Observable<any> {
-    const formattedDate = this.util.formatDate(new Date());
+    const curDate: Date = new Date();
+    const today = this.util.formatDate(curDate);
+    const oneWeekAgo = this.util.formatDate(
+      new Date(curDate.setDate(curDate.getDate() - 7))
+    );
     // tslint:disable-next-line: max-line-length
     return this.http.get(
-      `https://newsapi.org/v2/top-headlines?q=bitcoin&from=${formattedDate}&sortBy=publishedAt&apiKey=${this.newsApiKey}`
+      `https://newsapi.org/v2/everything?q=crypto&from=${oneWeekAgo}&to=${today}&sortBy=publishedAt&apiKey=${this.newsApiKey}`
     );
   }
 

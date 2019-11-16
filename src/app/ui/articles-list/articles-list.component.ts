@@ -22,11 +22,7 @@ export class ArticlesListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.articleSub = this.http.requestArticle().subscribe(
       (resp: NewsTopHeadlinesModel) => {
-        this.articlesList = [
-          resp.articles[1],
-          resp.articles[2],
-          resp.articles[3]
-        ];
+        this.articlesList = this.getDisplayedArticles(resp);
       },
       error => {
         console.error(error);
@@ -39,5 +35,18 @@ export class ArticlesListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.articleSub.unsubscribe();
+  }
+
+  private getDisplayedArticles(resp: NewsTopHeadlinesModel): ArticlesModel[] {
+    let articleTitles = resp.articles.map(article => article.title);
+    articleTitles = [...new Set(articleTitles)];
+    const articlesList: ArticlesModel[] = [];
+    articleTitles.forEach(title => {
+      const foundArticle = resp.articles.find(
+        article => article.title === title
+      );
+      articlesList.push(foundArticle);
+    });
+    return articlesList.splice(1, 3);
   }
 }

@@ -1,12 +1,12 @@
 <mat-card *ngIf="latestArticle;else loading">
   <h3>
-    <a href="{{latestArticle.url}}">{{latestArticle.title}}</a>
+    <a href="{{latestArticle.url}}" innerHtml="{{latestArticle.title}}"></a>
   </h3>
   <div class="img-container">
     <img src="{{latestArticle.urlToImage}}" alt="{{latestArticle.description}}">
   </div>
   <mat-card-content>
-    <p>{{latestArticle.content}}</p>
+    <p innerHtml="{{latestArticle.content}}"></p>
   </mat-card-content>
   <mat-card-subtitle>
     <footer>
