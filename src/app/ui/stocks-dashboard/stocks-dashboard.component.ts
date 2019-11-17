@@ -22,7 +22,14 @@ export class StocksDashboardComponent implements AfterViewInit, OnDestroy {
       title: {
         text: 'Close Price'
       }
-    }
+    },
+    series: [
+      {
+        name: 'BTC to USD',
+        data: [],
+        type: 'line'
+      }
+    ]
   };
   public updateFlag: boolean = false;
   private subscriptions: Subscription[] = [];

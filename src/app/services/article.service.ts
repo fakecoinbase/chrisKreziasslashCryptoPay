@@ -29,7 +29,7 @@ export class HttpRequestsService {
     );
     // tslint:disable-next-line: max-line-length
     return this.http.get(
-      `https://newsapi.org/v2/everything?q=crypto&from=${oneWeekAgo}&to=${today}&sortBy=publishedAt&apiKey=${this.newsApiKey}`
+      `https://newsapi.org/v2/everything?q=crypto&from=${oneWeekAgo}&to=${today}&sortBy=publishedAt&language=en&apiKey=${this.newsApiKey}`
     );
   }
 
