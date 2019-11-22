@@ -33,6 +33,8 @@ import { StocksDashboardComponent } from './ui/stocks-dashboard/stocks-dashboard
 import { HighchartsChartModule } from 'highcharts-angular';
 import { CoinDetailsComponent } from './ui/coin-details/coin-details.component';
 import { SectionCoinDetailsComponent } from './ui/section-coin-details/section-coin-details.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -70,6 +72,7 @@ import { SectionCoinDetailsComponent } from './ui/section-coin-details/section-c
     ReactiveFormsModule,
     HttpClientModule,
     HighchartsChartModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [],
   bootstrap: [AppComponent],
