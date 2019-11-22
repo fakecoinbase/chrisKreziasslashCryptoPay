@@ -52,7 +52,7 @@ import { SectionCoinDetailsComponent } from './ui/section-coin-details/section-c
     SectionCoinDetailsComponent,
   ],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
