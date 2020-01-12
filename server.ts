@@ -1,3 +1,4 @@
+import { Keys } from "./keys";
 /**
  * *** NOTE ON IMPORTING FROM ANGULAR AND NGUNIVERSAL IN THIS FILE ***
  *
@@ -15,17 +16,19 @@
  * import for `ngExpressEngine`.
  */
 
-import 'zone.js/dist/zone-node';
+import "zone.js/dist/zone-node";
 
-import * as express from 'express';
-import * as compression from 'compression';
-import { join } from 'path';
+import * as express from "express";
+import * as compression from "compression";
+import * as coinbase from "coinbase";
+import * as request from "request";
+import { join } from "path";
 
 // Express server
 const app = express();
 
 const PORT = process.env.PORT || 4000;
-const DIST_FOLDER = join(process.cwd(), 'dist/browser');
+const DIST_FOLDER = join(process.cwd(), "dist/browser");
 
 // * NOTE :: leave this as require() since this file is built Dynamically from webpack
 const {
@@ -33,37 +36,88 @@ const {
   LAZY_MODULE_MAP,
   ngExpressEngine,
   provideModuleMap
-} = require('./dist/server/main');
+} = require("./dist/server/main");
 
 // Our Universal express-engine (found @ https://github.com/angular/universal/tree/master/modules/express-engine)
 app.engine(
-  'html',
+  "html",
   ngExpressEngine({
     bootstrap: AppServerModuleNgFactory,
     providers: [provideModuleMap(LAZY_MODULE_MAP)]
   })
 );
 
-app.set('view engine', 'html');
-app.set('views', DIST_FOLDER);
+app.set("view engine", "html");
+app.set("views", DIST_FOLDER);
 
-// Example Express Rest API endpoints
-// app.get('/api/**', (req, res) => { });
+const clientId = Keys.clientId;
+const clientSecret = Keys.clientSecret;
+const redirectUrl = "api/oauth/callback";
+
+app.get("/api/oauth/authorize", (req, res) => {
+  res.redirect(
+    `https://www.coinbase.com/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUrl}&scope=wallet:user:read,wallet:accounts:read`
+  );
+});
+
+app.get("/api/oauth/callback", (req, res) => {
+  const code = req.query.code;
+  request.post(
+    `https://api.coinbase.com/oauth/token?grant_type=authorization_code&code=${code}&client_id=${clientId}&client_secret=${clientSecret}&redirect_uri=${redirectUrl}`,
+    getTokenCallback
+  );
+});
+
+function getTokenCallback(err, httpResponse, body) {
+  if (err) {
+    return console.error("Authorization failed:", err);
+  }
+  const accessToken = httpResponse.access_token;
+  const refreshToken = httpResponse.refresh_token;
+  const client = new coinbase.Client({
+    accessToken,
+    refreshToken
+  });
+  client.getAccount("primary", getAccountCallback);
+}
+
+function getAccountCallback(err, account) {
+  if (err) {
+    return console.error("Get account failed:", err);
+  }
+  const args = {
+    to: "user1@example.com",
+    amount: "1.234",
+    currency: "BTC",
+    description: "Sample transaction for you"
+  };
+  account.sendMoney(args, sendMoneyCallback);
+}
+
+function sendMoneyCallback(err, tx) {
+  if (err) {
+    return console.error("Send money failed:", err);
+  }
+  console.log(tx);
+}
+
 // Serve static files from /browser
 app.get(
-  '*.*',
+  "*.*",
   compression(),
   express.static(DIST_FOLDER, {
-    maxAge: '1y'
+    maxAge: "1y"
   })
 );
 
 // All regular routes use the Universal engine
-app.get('*', (req, res) => {
-  res.render('index', { req });
+app.get("*", (req, res) => {
+  res.render("index", { req });
 });
 
 // Start up the Node server
 app.listen(PORT, () => {
   console.log(`Node Express server listening on http://localhost:${PORT}`);
 });
+
+app.get("/api/get-accounts/", (req, res) => {});
