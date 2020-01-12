@@ -52,23 +52,36 @@ app.set("views", DIST_FOLDER);
 
 const clientId = Keys.clientId;
 const clientSecret = Keys.clientSecret;
-const redirectUrl = "api/oauth/callback";
+const callbackRoute = "api/oauth/callback/:email/:amount/:currency";
 
-app.get("/api/oauth/authorize", (req, res) => {
+app.get("/api/oauth/authorize/:email/:amount/:currency", (req, res) => {
   res.redirect(
-    `https://www.coinbase.com/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUrl}&scope=wallet:user:read,wallet:accounts:read`
+    // tslint:disable-next-line: max-line-length
+    `https://www.coinbase.com/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${getRedirectUrl(
+      req
+    )}&scope=wallet:user:read,wallet:accounts:read`
   );
 });
 
-app.get("/api/oauth/callback", (req, res) => {
+app.get(callbackRoute, (req, res) => {
   const code = req.query.code;
   request.post(
-    `https://api.coinbase.com/oauth/token?grant_type=authorization_code&code=${code}&client_id=${clientId}&client_secret=${clientSecret}&redirect_uri=${redirectUrl}`,
-    getTokenCallback
+    // tslint:disable-next-line: max-line-length
+    `https://api.coinbase.com/oauth/token?grant_type=authorization_code&code=${code}&client_id=${clientId}&client_secret=${clientSecret}&redirect_uri=${getRedirectUrl(
+      req
+    )}`,
+    (err, httpResponse, body) => {
+      const argsData = {
+        email: req.params.email,
+        amount: req.params.amount,
+        currency: req.params.currency
+      };
+      return getToken(err, httpResponse, body, argsData);
+    }
   );
 });
 
-function getTokenCallback(err, httpResponse, body) {
+function getToken(err, httpResponse, body, argsData) {
   if (err) {
     return console.error("Authorization failed:", err);
   }
@@ -78,17 +91,19 @@ function getTokenCallback(err, httpResponse, body) {
     accessToken,
     refreshToken
   });
-  client.getAccount("primary", getAccountCallback);
+  client.getAccount("primary", (error, account) => {
+    if (error) {
+      return console.error("Get account failed:", error);
+    }
+    return getAccount(account, argsData);
+  });
 }
 
-function getAccountCallback(err, account) {
-  if (err) {
-    return console.error("Get account failed:", err);
-  }
+function getAccount(account, argsData) {
   const args = {
-    to: "user1@example.com",
-    amount: "1.234",
-    currency: "BTC",
+    to: argsData.email,
+    amount: argsData.amount,
+    currency: argsData.currency,
     description: "Sample transaction for you"
   };
   account.sendMoney(args, sendMoneyCallback);
@@ -98,7 +113,13 @@ function sendMoneyCallback(err, tx) {
   if (err) {
     return console.error("Send money failed:", err);
   }
-  console.log(tx);
+}
+
+function getRedirectUrl(req) {
+  return callbackRoute
+    .replace(":email", req.params.email)
+    .replace(":amount", req.params.amount)
+    .replace(":currency", req.params.currency);
 }
 
 // Serve static files from /browser
