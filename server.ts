@@ -20,7 +20,6 @@ import "zone.js/dist/zone-node";
 
 import * as express from "express";
 import * as compression from "compression";
-import * as coinbase from "coinbase";
 import { join } from "path";
 
 // Express server
@@ -49,8 +48,8 @@ app.engine(
 app.set("view engine", "html");
 app.set("views", DIST_FOLDER);
 
-app.post("/api/funds/request/:email/:amount/:currency", (req, res) => {
-  const Client = coinbase().Client;
+app.post("/api/funds/request", (req, res) => {
+  const Client = require("coinbase").Client;
   const client = new Client({
     apiKey: Keys.coinAPI,
     apiSecret: Keys.coinSecret
@@ -59,16 +58,15 @@ app.post("/api/funds/request/:email/:amount/:currency", (req, res) => {
   client.getAccount("primary", (err, account) => {
     account.requestMoney(
       {
-        to: req.query.email,
-        amount: req.query.amount,
-        currency: req.query.currency
+        to: req.body.email,
+        amount: req.body.amount,
+        currency: req.body.currency
       },
       (error, tx) => {
-        if (tx) {
-          console.log(tx);
-        } else {
-          console.error(error);
+        if (error) {
+          res.send(error);
         }
+        res.send(tx);
       }
     );
   });
