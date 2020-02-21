@@ -20,19 +20,6 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Receiver Email" formControlName="receiveEmail">
-            <mat-error *ngIf="transferForm.controls['receiveEmail'].hasError('required')">
-              Receiver Email is <strong>required</strong>
-            </mat-error>
-            <mat-error *ngIf="transferForm.controls['receiveEmail'].hasError('email')">
-              Receiver Email is <strong>wrong</strong>
-            </mat-error>
-          </mat-form-field>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="full-width">
             <input matInput placeholder="Amount" formControlName="amount">
             <mat-error *ngIf="transferForm.controls['amount'].hasError('required')">
               Amount is <strong>required</strong>
